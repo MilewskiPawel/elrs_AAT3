@@ -1,0 +1,21 @@
+### The Legal Stuff ###
+
+# The use and operation of this type of device may require a license and some countries may forbid its use entirely.
+# It is entirely up to the end user to ensure compliance with local regulations. No claim of regulatory compliance is made. In most cases a HAM license is required.
+# This is experimental software/hardware and there is no guarantee of stability or reliability. USE AT YOUR OWN RISK
+
+# HOW TO USE THIS FILE: https://www.expresslrs.org/software/user-defines/
+# SIMPLY SEARCH WHICH DEFINE YOU NEED HELP WITH
+
+
+### BINDING PHRASE: ###
+# https://github.com/ExpressLRS/Backpack/wiki#binding
+#-DMY_BINDING_PHRASE="default ExpressLRS binding phrase"
+
+#-DHOME_WIFI_SSID=""
+#-DHOME_WIFI_PASSWORD=""
+
+# Turn on debug messages, if disabled then all debugging options (starting with DEBUG_) are disabled
+#-DDEBUG_LOG
+# Use DEBUG_LOG_VERBOSE instead (or both) to see verbose debug logging (spammy stuff)
+#-DDEBUG_LOG_VERBOSE

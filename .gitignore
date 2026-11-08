@@ -1,3 +1,8 @@
-.pio/
-.vscode/
-*.log
+.pio
+.pioenvs
+.piolibdeps
+.vscode
+__pycache__
+*.pyc
+include/WebContent.h
+super_defines.txt

@@ -115,54 +115,34 @@ static void updateLeds4()
     }
     lastState4 = st;
 
-    bool isError = (st >= FAILURE_STATES);
+    bool isProblem = (st >= FAILURE_STATES) || bindFailed4;
 
-    // LED 1 (idx 0): green when started/ok, red on error
-    setPixel(0, isError ? cRed() : cGreen());
-
-    // LED 2 (idx 1): AP config mode
-    // blink when AP active (wifiUpdate) and no client; solid green when client connected
-    if (st == wifiUpdate)
-    {
-        uint8_t stations = 0;
+    // LED 1 (idx 0): zielona gdy jest aktywny AP
+    bool isApActive = (st == wifiUpdate);
 #if defined(PLATFORM_ESP8266) || defined(PLATFORM_ESP32)
-        stations = WiFi.softAPgetStationNum();
+    WiFiMode_t currentMode = WiFi.getMode();
+    if (currentMode == WIFI_AP || currentMode == WIFI_AP_STA)
+    {
+        isApActive = true;
+    }
 #endif
-        if (stations > 0)
-            setPixel(1, cGreen());
-        else
-            setPixel(1, ((now / 250) % 2) ? cGreen() : cOff());
+    setPixel(0, isApActive ? cGreen() : cOff());
+
+    // LED 2 (idx 1): mruga na zielono gdy jest w trybie bindowania
+    if (st == binding)
+    {
+        setPixel(1, ((now / 250) % 2) ? cGreen() : cOff());
     }
     else
     {
-        // outside wifiUpdate: off (keeps meaning clear)
         setPixel(1, cOff());
     }
 
-    // LED 3 (idx 2): binding
-    if (st == binding)
-    {
-        // blink every 1s
-        setPixel(2, ((now / 1000) % 2) ? cGreen() : cOff());
-    }
-    else if (bindSuccess4)
-    {
-        setPixel(2, cGreen());
-    }
-    else if (bindFailed4)
-    {
-        setPixel(2, cRed());
-    }
-    else
-    {
-        setPixel(2, cOff());
-    }
+    // LED 3 (idx 2): gdy jest problem pali sie na czerwono
+    setPixel(2, isProblem ? cRed() : cOff());
 
-    // LED 4 (idx 3): red if restart performed/scheduled
-    if (rebootTime != 0)
-        setPixel(3, cRed());
-    else
-        setPixel(3, cOff());
+    // LED 4 (idx 3): wylaczona
+    setPixel(3, cOff());
 
     _ws2812.show();
 }
@@ -201,7 +181,6 @@ static void initialize()
     _ws2812.setBrightness(255);
 #if (WS2812_COUNT == 4)
     for (uint16_t i = 0; i < _ws2812.numPixels(); i++) setPixel(i, cOff());
-    setPixel(0, cGreen()); // started
     _ws2812.show();
 #else
     writeLED(true);

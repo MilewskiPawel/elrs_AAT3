@@ -6,8 +6,10 @@
 #include "EspFlashStream.h"
 #if defined(PLATFORM_ESP8266)
 #include <FS.h>
+#include <MD5Builder.h>
 #else
 #include <SPIFFS.h>
+#include <MD5Builder.h>
 #endif
 #if defined(PLATFORM_ESP32)
 #include <esp_partition.h>
@@ -135,6 +137,21 @@ static void options_LoadFromFlashOrFile(EspFlashStream &strmFlash)
     {
         firmwareOptions.hasUID = false;
     }
+
+#if defined(MY_BINDING_PHRASE)
+    // Derive UID from binding phrase if not already set (same hash as ELRS/Backpack)
+    if (!firmwareOptions.hasUID)
+    {
+        String phrase = String("-DMY_BINDING_PHRASE=\"") + STR(MY_BINDING_PHRASE) + "\"";
+        MD5Builder md5;
+        md5.begin();
+        md5.add(phrase);
+        md5.calculate();
+        md5.getBytes(firmwareOptions.uid);
+        // getBytes returns 16 bytes; ELRS UID uses first 6
+        firmwareOptions.hasUID = true;
+    }
+#endif
     strlcpy(firmwareOptions.home_wifi_ssid, doc["wifi-ssid"] | "", sizeof(firmwareOptions.home_wifi_ssid));
     strlcpy(firmwareOptions.home_wifi_password, doc["wifi-password"] | "", sizeof(firmwareOptions.home_wifi_password));
     strlcpy(firmwareOptions.product_name, doc["product-name"] | "", sizeof(firmwareOptions.product_name));

@@ -132,6 +132,10 @@ static void options_LoadFromFlashOrFile(EspFlashStream &strmFlash)
     {
         copyArray(doc["uid"], firmwareOptions.uid, sizeof(firmwareOptions.uid));
         firmwareOptions.hasUID = true;
+        // Treat all-zero UID as unset so compile-time phrase can apply
+        bool allZero = true;
+        for (size_t i = 0; i < sizeof(firmwareOptions.uid); i++) if (firmwareOptions.uid[i] != 0) { allZero = false; break; }
+        if (allZero) firmwareOptions.hasUID = false;
     }
     else
     {

@@ -15,6 +15,7 @@ DEVICE_KEYS = ['product_name', 'firmware', 'platform', 'upload_methods', 'valida
 BOARD_PLATFORMS = {
     'esp8285': 'esp8285',
     'esp12e': 'esp8285',
+    'nodemcuv2': 'esp8285',
     'esp32dev': 'esp32',
     'esp32-c3-devkitm-1': 'esp32-c3',
     'esp32-s3-devkitc-1': 'esp32-s3',
@@ -41,7 +42,9 @@ def load_environments():
         if section in seen or not ini.has_section(section):
             return None
         if ini.has_option(section, 'board'):
-            return BOARD_PLATFORMS.get(ini.get(section, 'board'))
+            platform = BOARD_PLATFORMS.get(ini.get(section, 'board'))
+            if platform is not None:
+                return platform
         if ini.has_option(section, 'extends'):
             for parent in re.split(r'[,\s]+', ini.get(section, 'extends')):
                 platform = resolve_platform(parent, seen + (section,))
